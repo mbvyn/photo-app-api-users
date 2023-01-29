@@ -1,6 +1,9 @@
 package com.mbvyn.photoapp.api.users.shared;
 
 import java.io.Serializable;
+import java.util.List;
+
+import com.mbvyn.photoapp.api.users.ui.model.AlbumResponseModel;
 
 public class UserDTO implements Serializable {
 	
@@ -12,6 +15,7 @@ public class UserDTO implements Serializable {
 	private String password;
 	private String userId;
 	private String encryptedPassword;
+	private List<AlbumResponseModel> albums;
 
 	public String getFirstName() {
 		return firstName;
@@ -59,5 +63,13 @@ public class UserDTO implements Serializable {
 
 	public void setEncryptedPassword(String encryptedPassword) {
 		this.encryptedPassword = encryptedPassword;
+	}
+
+	public List<AlbumResponseModel> getAlbums() {
+		return albums;
+	}
+
+	public void setAlbums(List<AlbumResponseModel> albums) {
+		this.albums = albums;
 	}
 }
