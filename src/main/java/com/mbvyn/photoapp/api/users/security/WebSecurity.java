@@ -40,7 +40,9 @@ public class WebSecurity {
         // Get AuthenticationManager
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        http.cors().and().csrf().disable().authorizeRequests().requestMatchers("/**").permitAll()
+        http.cors().and().csrf().disable().authorizeRequests()
+        		.requestMatchers("/**").permitAll()
+        		.requestMatchers("/actuator/**").permitAll()
                 .and()
                 .addFilter(getAuthenticationFilter(authenticationManager)).authenticationManager(authenticationManager)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

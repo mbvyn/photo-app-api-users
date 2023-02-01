@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +22,7 @@ import com.mbvyn.photoapp.api.users.ui.model.AlbumResponseModel;
 
 @Service
 public class UsersServiceImpl implements UsersService {
+	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	UsersRepository usersRepository;
 	BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -77,7 +80,9 @@ public class UsersServiceImpl implements UsersService {
 		
 		UserDTO userDTO = new ModelMapper().map(userEntity, UserDTO.class);
 		
+		logger.info("Before calling albums Microservice");
 		List<AlbumResponseModel> albumsList = albumsServiceClient.getAlbums(userId);
+		logger.info("After calling albums Microservice");
 		
 		userDTO.setAlbums(albumsList);
 	

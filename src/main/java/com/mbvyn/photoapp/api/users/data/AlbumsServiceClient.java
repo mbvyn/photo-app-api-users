@@ -1,5 +1,6 @@
 package com.mbvyn.photoapp.api.users.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -8,9 +9,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.mbvyn.photoapp.api.users.ui.model.AlbumResponseModel;
 
-@FeignClient(name="albums-ws")
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+
+@FeignClient(name = "albums-ws")
 public interface AlbumsServiceClient {
-	
-	@GetMapping("/users/{id}/albumss")
+
+	@GetMapping("/users/{id}/albums")
+	@Retry(name = "albums-ws")
+	@CircuitBreaker(name = "albums-ws", fallbackMethod = "getAlbumsFallback")
 	public List<AlbumResponseModel> getAlbums(@PathVariable String id);
+
+	default List<AlbumResponseModel> getAlbumsFallback(String id, Throwable exception) {
+		return new ArrayList<>();
+	}
 }
