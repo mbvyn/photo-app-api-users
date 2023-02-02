@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.retry.annotation.CircuitBreaker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.client.RestTemplate;
@@ -31,7 +32,14 @@ public class PhotoAppApiUsersApplication {
 	}
 
 	@Bean
+	@Profile("production")
 	Logger.Level getFeignLoggerLevel() {
+		return Logger.Level.NONE;
+	}
+	
+	@Bean
+	@Profile("default")
+	Logger.Level getFeignDefaultLoggerLevel() {
 		return Logger.Level.FULL;
 	}
 
