@@ -3,6 +3,7 @@ package com.mbvyn.photoapp.api.users.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,8 +13,11 @@ import com.mbvyn.photoapp.api.users.service.UsersService;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+@SuppressWarnings("deprecation")
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 @Configuration
 @EnableWebSecurity
 public class WebSecurity {
@@ -29,8 +33,7 @@ public class WebSecurity {
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
 
-    @SuppressWarnings("deprecation")
-	@Bean
+    @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
         // Configure AuthenticationManagerBuilder
@@ -41,10 +44,12 @@ public class WebSecurity {
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
         http.cors().and().csrf().disable().authorizeRequests()
-        		.requestMatchers("/**").permitAll()
-        		.requestMatchers("/actuator/**").permitAll()
+        		.requestMatchers(HttpMethod.POST, "/users").permitAll()
+        		.requestMatchers("/h2-console/**").permitAll()
+        		.anyRequest().authenticated()
                 .and()
                 .addFilter(getAuthenticationFilter(authenticationManager)).authenticationManager(authenticationManager)
+                .addFilter(new AuthorizationFilter(authenticationManager, environment))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.headers().frameOptions().disable();
